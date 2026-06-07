@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OBISL Gamified Learning - Module 5</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cyberDark: '#050814',
+            cyberCard: '#0f172a',
+            cyberCyan: '#06b6d4',
+            cyberEmerald: '#10b981',
+            cyberGold: '#f59e0b',
+            cyberDanger: '#f43f5e',
+            cyberBlue: '#1e40af'
+          },
+          fontFamily: {
+            sans: ['Noto Sans', 'Noto Sans Sinhala', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            serifDisplay: ['Cinzel', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom CSS to prevent text selection and scroll bouncing */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050814;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    /* Scrollbar Styling for Bottom Viewport */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Pulse active navigation tab */
+    .active-tab {
+      background-color: rgba(6, 182, 212, 0.15);
+      border-bottom: 2px solid #06b6d4;
+      color: #06b6d4;
+    }
+
+    /* Soft neon glows */
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+    .glow-gold {
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+    }
+  </style>
+</head>
+<body class="font-sans text-slate-200">
+
+  <!-- ==================== MAIN COMPACT SCREEN CONTAINER ==================== -->
+  <div class="flex flex-col h-screen w-screen overflow-hidden bg-cyberDark select-none relative">
+    
+    <!-- 1. FIXED APP HEADER (6vh) -->
+    <header class="h-[6vh] min-h-[40px] bg-[#090d22] border-b border-slate-800 flex items-center justify-between px-4 z-40">
+      <div class="flex items-center space-x-2">
+        <span class="text-cyberCyan font-display font-bold text-xs sm:text-sm tracking-wider uppercase">OBISL Campus</span>
+        <span class="text-slate-500">|</span>
+        <span id="headerTitle" class="text-slate-300 font-sans font-semibold text-[10px] sm:text-xs">Gamified Learning</span>
+      </div>
+      <!-- Language Toggle -->
+      <button onclick="toggleLanguage()" class="flex items-center space-x-1 px-3 py-1 bg-slate-800 rounded-full border border-slate-700 hover:bg-slate-700 transition duration-150">
+        <span id="langIndicator" class="text-cyberGold text-[10px] sm:text-xs font-bold tracking-wider">ENG | සිංහල</span>
+      </button>
+    </header>
+
+    <!-- 2. DYNAMIC SLIDE NAVIGATION BAR (5vh) -->
+    <nav class="h-[5vh] min-h-[35px] bg-[#0d1330] border-b border-slate-800 flex items-stretch text-center z-30 overflow-x-auto custom-scrollbar">
+      <button onclick="switchTab(0)" id="navTab0" class="flex-1 min-w-[90px] text-[10px] sm:text-xs font-display font-bold uppercase flex items-center justify-center transition-all duration-300 px-1 border-r border-slate-800/50">
+        <span id="tabName0">Buyer vs User</span>
+      </button>
+      <button onclick="switchTab(1)" id="navTab1" class="flex-1 min-w-[90px] text-[10px] sm:text-xs font-display font-bold uppercase flex items-center justify-center transition-all duration-300 px-1 border-r border-slate-800/50">
+        <span id="tabName1">Need Hierarchy</span>
+      </button>
+      <button onclick="switchTab(2)" id="navTab2" class="flex-1 min-w-[90px] text-[10px] sm:text-xs font-display font-bold uppercase flex items-center justify-center transition-all duration-300 px-1 border-r border-slate-800/50">
+        <span id="tabName2">Decision Path</span>
+      </button>
+      <button onclick="switchTab(3)" id="navTab3" class="flex-1 min-w-[90px] text-[10px] sm:text-xs font-display font-bold uppercase flex items-center justify-center transition-all duration-300 px-1">
+        <span id="tabName3">Fishbein Model</span>
+      </button>
+    </nav>
+
+    <!-- 3. TOP VIEWPORT CANVAS (38vh) -->
+    <section class="h-[38vh] bg-gradient-to-b from-[#060a1c] to-[#0a102b] border-b border-slate-800 relative flex items-center justify-center z-20">
+      <!-- The Interactive Engine -->
+      <canvas id="interactiveCanvas" class="w-full h-full block cursor-pointer"></canvas>
+      
+      <!-- Interactive Helper Overlay on Canvas -->
+      <div class="absolute top-2 left-2 pointer-events-none bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800 flex items-center space-x-1.5">
+        <span class="w-2 h-2 rounded-full bg-cyberCyan animate-ping"></span>
+        <span id="canvasOverlayPrompt" class="text-[9px] text-slate-400 font-semibold tracking-wide uppercase">Active Simulation</span>
+      </div>
+
+      <!-- Live Goal Status Ribbon -->
+      <div id="gameSuccessRibbon" class="absolute bottom-2 right-2 pointer-events-none bg-emerald-950/90 border border-emerald-500/50 px-2.5 py-1 rounded text-[10px] text-emerald-400 font-bold tracking-wider uppercase flex items-center space-x-1 transform translate-y-12 opacity-0 transition-all duration-300">
+        <span>✓</span>
+        <span id="successRibbonTxt">Task Verified</span>
+      </div>
+    </section>
+
+    <!-- 4. BOTTOM VIEWPORT EXPANDABLE / STEP CONTENT (45vh) -->
+    <main class="h-[45vh] bg-[#080d24] relative overflow-hidden z-10">
+      <div id="cardSlider" class="flex h-full w-[400%] transition-transform duration-500 ease-out">
+        
+        <!-- ==================== STEP 1 CARD: CUSTOMER VS CONSUMER ==================== -->
+        <div class="w-1/4 h-full flex flex-col p-4 overflow-y-auto custom-scrollbar">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-xs text-cyberCyan font-display font-bold tracking-widest uppercase">Step 01 / 04</span>
+              <h2 id="cardTitle0" class="text-lg font-bold font-display text-white mt-0.5">Dichotomy: Customer vs Consumer</h2>
+            </div>
+            <span id="statusBadge0" class="bg-rose-950 text-rose-400 border border-rose-500/30 text-[9px] font-bold px-2 py-0.5 rounded uppercase">Pending</span>
+          </div>
+          
+          <p id="cardDesc0" class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Marketers must decouple the purchasing transaction (Customer role) from actual user utility (Consumer role). Route the launch parameters for the educational tablet above into Parent or Child criteria.
+          </p>
+
+          <!-- Interactive Action Button -->
+          <div class="mt-4 flex items-center space-x-3">
+            <button onclick="triggerReset(0)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-[11px] font-bold rounded text-slate-300 transition duration-150">
+              ⟲ <span id="resetBtn0">Reset Task</span>
+            </button>
+            <button onclick="nextCard()" id="nextBtn0" class="flex-1 py-1.5 bg-slate-800 text-slate-500 cursor-not-allowed text-[11px] font-bold rounded text-center transition duration-150">
+              <span id="nextText0">Complete Task First</span>
+            </button>
+          </div>
+
+          <!-- Deep-dive Knowledge Expander -->
+          <div class="mt-4 border-t border-slate-800/80 pt-3">
+            <button onclick="toggleExpander(0)" class="w-full flex items-center justify-between text-xs font-bold text-cyberCyan hover:text-cyan-400">
+              <span id="expanderTitle0">🔍 Theoretical Framework & Micro-Data</span>
+              <span id="expanderArrow0">▼</span>
+            </button>
+            <div id="expanderContent0" class="hidden mt-2 bg-[#0d1435] border border-slate-800/80 rounded p-3 text-xs text-slate-300 leading-relaxed space-y-2">
+              <p>
+                <strong>The Dual Vectors:</strong> Decoupling transactional clients from end-users ensures you target the correct emotional triggers in separate messaging maps.
+              </p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-400">
+                <li><strong>Customer (Buyer):</strong> Driven by logical values like payment terms, specifications, and educational boundaries.</li>
+                <li><strong>Consumer (User):</strong> Activated by responsive, sensory feedback and colorful interactive elements.</li>
+              </ul>
+              <div class="bg-slate-950 p-2 rounded text-[11px] font-mono text-slate-400 border-l-2 border-cyberCyan">
+                Strategy: Parent acts as financial gatekeeper; child is the vector of real physical demand.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 2 CARD: NEED HIERARCHY ==================== -->
+        <div class="w-1/4 h-full flex flex-col p-4 overflow-y-auto custom-scrollbar">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-xs text-cyberCyan font-display font-bold tracking-widest uppercase">Step 02 / 04</span>
+              <h2 id="cardTitle1" class="text-lg font-bold font-display text-white mt-0.5">Dynamic Calibrator: Need Alignment</h2>
+            </div>
+            <span id="statusBadge1" class="bg-rose-950 text-rose-400 border border-rose-500/30 text-[9px] font-bold px-2 py-0.5 rounded uppercase">Pending</span>
+          </div>
+          
+          <p id="cardDesc1" class="text-xs text-slate-400 mt-2 leading-relaxed">
+            The premium Aura Smart Ring ($450) initially failed because mass-market consumers had a physical price anchor of $200. Pivot the product up the needs ladder. Drag the slider on the canvas to calibrate the marketing angle to <strong>Esteem & Status</strong>!
+          </p>
+
+          <!-- Interactive Calibration Tester -->
+          <div class="mt-4 flex items-center space-x-3">
+            <button onclick="testCalibration()" class="flex-1 py-1.5 bg-cyberCyan hover:bg-cyan-400 text-slate-950 text-[11px] font-extrabold rounded text-center transition duration-150">
+              🚀 <span id="testCalibrateBtn">Test Calibration Strategy</span>
+            </button>
+            <button onclick="nextCard()" id="nextBtn1" class="px-4 py-1.5 bg-slate-800 text-slate-500 cursor-not-allowed text-[11px] font-bold rounded text-center transition duration-150">
+              <span id="nextText1">Next →</span>
+            </button>
+          </div>
+
+          <!-- Deep-dive Knowledge Expander -->
+          <div class="mt-4 border-t border-slate-800/80 pt-3">
+            <button onclick="toggleExpander(1)" class="w-full flex items-center justify-between text-xs font-bold text-cyberCyan hover:text-cyan-400">
+              <span id="expanderTitle1">🔍 Maslow's Marketing Adaptation</span>
+              <span id="expanderArrow1">▼</span>
+            </button>
+            <div id="expanderContent1" class="hidden mt-2 bg-[#0d1435] border border-slate-800/80 rounded p-3 text-xs text-slate-300 leading-relaxed space-y-2">
+              <p>
+                <strong>The Aura Fitness Case Study:</strong> An elite technical device cannot compete purely on functional features (Physiological tracking or basic sleep metrics) if its retail price is high.
+              </p>
+              <div class="bg-slate-950 p-2.5 rounded text-[11px] font-mono border-l-2 border-cyberGold text-slate-400">
+                <strong>Functional Pitch:</strong> "Tracks heart rate for 7 days" (Valued at $150-$200).<br>
+                <strong>Psychographic Pitch:</strong> "A luxury executive emblem for elite, high-performance individuals" (Valued at $450+).
+              </div>
+              <p class="text-slate-400">
+                By sliding to <em>Esteem Needs</em>, we change cognitive anchors from utility tools to exclusive lifestyle status symbols, driving ROI without reducing prices.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 3 CARD: DECISION PATH ==================== -->
+        <div class="w-1/4 h-full flex flex-col p-4 overflow-y-auto custom-scrollbar">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-xs text-cyberCyan font-display font-bold tracking-widest uppercase">Step 03 / 04</span>
+              <h2 id="cardTitle2" class="text-lg font-bold font-display text-white mt-0.5">Chronological Pipeline: Decision-Making</h2>
+            </div>
+            <span id="statusBadge2" class="bg-rose-950 text-rose-400 border border-rose-500/30 text-[9px] font-bold px-2 py-0.5 rounded uppercase">Pending</span>
+          </div>
+          
+          <p id="cardDesc2" class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Help the consumer reach purchase completion. Drag the strategic marketing antidotes from the bottom deck and drop them into the matching stages of the journey pipeline to eradicate friction!
+          </p>
+
+          <!-- Interactive Action Button -->
+          <div class="mt-4 flex items-center space-x-3">
+            <button onclick="triggerReset(2)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-[11px] font-bold rounded text-slate-300 transition duration-150">
+              ⟲ <span id="resetBtn2">Reset Sockets</span>
+            </button>
+            <button onclick="nextCard()" id="nextBtn2" class="flex-1 py-1.5 bg-slate-800 text-slate-500 cursor-not-allowed text-[11px] font-bold rounded text-center transition duration-150">
+              <span id="nextText2">Complete Task First</span>
+            </button>
+          </div>
+
+          <!-- Deep-dive Knowledge Expander -->
+          <div class="mt-4 border-t border-slate-800/80 pt-3">
+            <button onclick="toggleExpander(2)" class="w-full flex items-center justify-between text-xs font-bold text-cyberCyan hover:text-cyan-400">
+              <span id="expanderTitle2">🔍 Theoretical Milestone Analysis</span>
+              <span id="expanderArrow2">▼</span>
+            </button>
+            <div id="expanderContent2" class="hidden mt-2 bg-[#0d1435] border border-slate-800/80 rounded p-3 text-xs text-slate-300 leading-relaxed space-y-2">
+              <ol class="list-decimal pl-4 space-y-1 text-slate-400">
+                <li><strong>Need Recognition:</strong> Gap between actual & ideal state mitigated via Emotional Storytelling.</li>
+                <li><strong>Information Search:</strong> Target high discoverability in customer evoked sets with crisp SEO mappings.</li>
+                <li><strong>Alternative Evaluation:</strong> Provide transparent specification metrics & value comparisons.</li>
+                <li><strong>Purchase Decision:</strong> Ensure frictionless transitions with rapid checkout models.</li>
+                <li><strong>Post-Purchase Behaviour:</strong> Eliminate buyer's remorse with direct proactive validation emails & setup guides.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== STEP 4 CARD: FISHBEIN MODEL ==================== -->
+        <div class="w-1/4 h-full flex flex-col p-4 overflow-y-auto custom-scrollbar">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-xs text-cyberCyan font-display font-bold tracking-widest uppercase">Step 04 / 04</span>
+              <h2 id="cardTitle3" class="text-lg font-bold font-display text-white mt-0.5">Systemic Balance: Fishbein Model</h2>
+            </div>
+            <span id="statusBadge3" class="bg-rose-950 text-rose-400 border border-rose-500/30 text-[9px] font-bold px-2 py-0.5 rounded uppercase">Pending</span>
+          </div>
+          
+          <p id="cardDesc3" class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Quantify qualitative market sentiment. Tap the adjustment circles on the canvas sliders to modify consumer belief ($b_i$) and importance weight ($e_i$). Optimize overall brand attitude score $A_o \ge 175$ to outperform competitors!
+          </p>
+
+          <!-- Interactive Verification Trigger -->
+          <div class="mt-4 flex items-center space-x-3">
+            <button onclick="verifyFishbein()" class="flex-1 py-1.5 bg-cyberGold hover:bg-amber-400 text-slate-950 text-[11px] font-extrabold rounded text-center transition duration-150">
+              📊 <span id="calculateBtn">Verify Attitude Score</span>
+            </button>
+            <button onclick="triggerBadgeUnlock()" id="badgeUnlockBtn" class="px-3 py-1.5 bg-slate-800 text-slate-500 cursor-not-allowed text-[11px] font-bold rounded transition duration-150">
+              🏆 <span id="badgeBtnTxt">Badge Locked</span>
+            </button>
+          </div>
+
+          <!-- Deep-dive Knowledge Expander -->
+          <div class="mt-4 border-t border-slate-800/80 pt-3">
+            <button onclick="toggleExpander(3)" class="w-full flex items-center justify-between text-xs font-bold text-cyberCyan hover:text-cyan-400">
+              <span id="expanderTitle3">🔍 The Multi-Attribute Equation</span>
+              <span id="expanderArrow3">▼</span>
+            </button>
+            <div id="expanderContent3" class="hidden mt-2 bg-[#0d1435] border border-slate-800/80 rounded p-3 text-xs text-slate-300 leading-relaxed space-y-2">
+              <p>
+                The <strong>Fishbein Multi-Attribute Model</strong> mathematical equation:
+              </p>
+              <div class="bg-slate-950 p-2.5 rounded text-center font-mono text-cyan-400 border border-slate-800 text-xs">
+                $$A_{o} = \sum_{i=1}^{n} (b_{i} \times e_{i})$$
+              </div>
+              <p class="text-slate-400 text-[11px]">
+                Where:<br>
+                <strong>$A_{o}$</strong> = Brand/Product Attitude Score<br>
+                <strong>$b_{i}$</strong> = Strength of consumer belief that the brand possesses attribute $i$ (1-10)<br>
+                <strong>$e_{i}$</strong> = Importance evaluation weight of attribute $i$ (1-10)
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- 5. STICKY INTELLECTUAL PROPERTY FOOTER (6vh) -->
+    <footer class="h-[6vh] min-h-[38px] bg-[#050814] border-t border-slate-800/80 flex items-center justify-between px-4 z-40 text-center">
+      <span id="footerBrand" class="text-[9px] sm:text-xs text-slate-500 font-display uppercase tracking-wider">OBISL Campus</span>
+      <span id="footerCreds" class="text-[9px] sm:text-[10px] text-slate-400 font-sans">Concept by Michael Ranuka Gamage | CMS Certificate in Marketing Skills</span>
+      <span class="text-[9px] sm:text-xs text-cyberCyan font-bold tracking-widest font-display">M5</span>
+    </footer>
+
+  </div>
+
+  <!-- ==================== PREMIUM BADGE & CERTIFICATION MODAL ==================== -->
+  <div id="badgeModal" class="fixed inset-0 bg-slate-950/90 flex items-center justify-center p-4 z-50 transform scale-0 opacity-0 transition-all duration-500 pointer-events-none">
+    <div class="bg-[#0b102b] border-2 border-cyberGold max-w-md w-full rounded-lg glow-gold overflow-hidden flex flex-col relative p-6">
+      
+      <!-- Close button -->
+      <button onclick="closeBadgeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white font-bold text-lg">&times;</button>
+      
+      <div class="text-center flex flex-col items-center">
+        <!-- SVG Vector Badge Emblem -->
+        <div class="w-24 h-24 mb-4 animate-bounce">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <defs>
+              <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fbbf24" />
+                <stop offset="50%" stop-color="#f59e0b" />
+                <stop offset="100%" stop-color="#b45309" />
+              </linearGradient>
+            </defs>
+            <!-- Outer Golden Gear/Spokes -->
+            <polygon points="50,5 58,20 73,12 75,29 91,28 85,44 98,50 85,56 91,72 75,71 73,88 58,80 50,95 42,80 27,88 25,71 9,72 15,56 2,50 15,44 9,28 25,29 27,12 42,20" fill="url(#goldGrad)" />
+            <!-- Inner Circle -->
+            <circle cx="50" cy="50" r="32" fill="#050814" stroke="#fbbf24" stroke-width="2" />
+            <!-- Core Star -->
+            <path d="M50,28 L55,40 L68,40 L57,48 L61,61 L50,52 L39,61 L43,48 L32,40 L45,40 Z" fill="url(#goldGrad)" />
+            <circle cx="50" cy="50" r="24" fill="none" stroke="#fbbf24" stroke-dasharray="2, 2" />
+          </svg>
+        </div>
+
+        <h3 class="text-xs text-cyberGold font-display font-black tracking-widest uppercase mb-1">OBISL Professional Certification</h3>
+        <h2 id="modalTitle" class="text-xl font-bold text-white font-serifDisplay tracking-wide leading-tight">Mastery in Consumer Behaviour</h2>
+        <p class="text-[9px] text-slate-500 font-mono uppercase tracking-wider mt-1">Module Code: CMS-M5</p>
+        
+        <div class="w-full bg-[#050814] rounded border border-slate-800/80 p-3 my-4">
+          <p id="modalQuote" class="text-xs text-slate-300 italic leading-relaxed">
+            "Successful marketing connects foundational psychological needs directly to robust commercial metrics. Today, you calibrated behavioral alignment, decoupled client roles, and modeled mathematically valid sentiment scorecards."
+          </p>
+          <div class="mt-3 flex flex-col items-center">
+            <span class="text-[10px] text-cyberCyan font-bold tracking-widest uppercase">Certified & Approved By</span>
+            <span class="text-xs text-white font-serifDisplay mt-1">Michael Ranuka Gamage</span>
+            <span class="text-[8px] text-slate-500 uppercase tracking-widest mt-0.5">Head of Pedagogical Content Design</span>
+          </div>
+        </div>
+
+        <button onclick="closeBadgeModal()" id="modalCloseBtn" class="w-full py-2 bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-slate-950 text-xs font-black rounded uppercase tracking-wider transition duration-150">
+          Return to Dashboard
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== BILINGUAL TRANSLATION DICTIONARY & GAME CODE ==================== -->
+  <script>
+    // ==================== 1. VARIABLE DECLARATIONS (Avoid Temporal Dead Zone) ====================
+    let activeTab = 0;
+    let currentLanguage = 'en';
+    let canvas, ctx;
+    
+    // Mouse Coordinates
+    let mouseX = 0;
+    let mouseY = 0;
+    let isMouseDown = false;
+    let draggedElement = null;
+
+    // Particle state
+    let particles = [];
+
+    // System success markers
+    let stepsCompleted = [false, false, false, false];
+    let gameActive = [false, false, false, false]; // Controls Start Gate overlay
+
+    // --- GAME 1 ENGINES (Buyer vs Consumer Campaign Matrix) ---
+    let g1Containers = [];
+    let g1Nodes = [];
+    let g1Success = false;
+
+    // --- GAME 2 ENGINES (Dynamic Maslow Pyramid Calibrator) ---
+    let g2Slider = { x: 0, y: 0, w: 0, h: 0, val: 0.2, isDragging: false };
+    let g2ScaleState = "Functional Specification";
+    let g2Success = false;
+
+    // --- GAME 3 ENGINES (Journey Friction-Mitigation Pipeline) ---
+    let g3Sockets = [];
+    let g3Nodes = [];
+    let g3Success = false;
+
+    // --- GAME 4 ENGINES (Fishbein Attribute Balance Dashboard) ---
+    let g4Attributes = [];
+    let g4CompetitorScore = 170;
+    let g4TargetScore = 175;
+    let g4CurrentAo = 0;
+    let g4Success = false;
+
+    // --- BILINGUAL DICTIONARY ---
+    const translations = {
+      en: {
+        headerTitle: "Module 5: Consumer Behaviour Analysis",
+        canvasOverlayPrompt: "Active Simulation",
+        successRibbonTxt: "Task Verified",
+        badgeBtnTxt: "Badge Locked",
+        badgeBtnTxtUnlocked: "Unlock Badge",
+        langIndicator: "සිංහල",
+        footerBrand: "OBISL Campus",
+        footerCreds: "Concept by Michael Ranuka Gamage | CMS Certificate in Marketing Skills",
+        tabs: ["Buyer vs User", "Need Hierarchy", "Decision Path", "Fishbein Model"],
+        
+        // Start Gate overlays
+        startTitle: [
+          "Dichotomy: Parent vs Child Campaign",
+          "Aura Fitness: Psychographic Calibration",
+          "Journey Mapping: Friction-Mitigation Pipeline",
+          "Fishbein Model: Strategic Attitude Balance"
+        ],
+        startInstructions: [
+          "Launch an Educational Kids Tablet. You must decouple the transactional customer from the end-user.\n\nInstructions: Drag the tactical marketing parameters starting at the bottom shelf into the correct Target Vessel (Parent: Customer / Child: Consumer). Correctly sort all 6 to establish optimal product positioning.",
+          "The premium Aura Fitness Smart Ring failed at launch with functional marketing pitches.\n\nInstructions: Maslow's Needs states that high price items cannot compete purely on health tracking metrics. Drag the calibrator slider to align the product with 'Esteem & Status Needs' ($450 market value), and press 'Test Calibration' to verify.",
+          "Guide a consumer avatar cleanly through the five stages of the decision journey.\n\nInstructions: The customer faces specific Friction Barriers at each milestone of the path. Match the correct Marketing Antidotes from the bottom deck, and drag them into the journey pipeline sockets (1 to 5) to restore frictionless movement.",
+          "Quantify consumer psychology attributes into a hard commercial attitude scorecard (Ao).\n\nInstructions: The competitor has a static attitude score of 170. Modify our product's Belief ratings (bi) and customer Importance Weights (ei) by sliding the indicators. Overpower the competitor with Ao >= 175, and press 'Verify' to finish."
+        ],
+        btnStart: "Start Activity",
+
+        cardTitles: [
+          "Dichotomy: Customer vs Consumer",
+          "Dynamic Calibrator: Need Alignment",
+          "Chronological Pipeline: Decision-Making",
+          "Systemic Balance: Fishbein Model"
+        ],
+        cardDescs: [
+          "Marketers must decouple the purchasing transaction (Customer role) from actual user utility (Consumer role). Route the launch parameters for the educational tablet above into Parent or Child criteria.",
+          "The premium Aura Smart Ring ($450) initially failed because mass-market consumers had a physical price anchor of $200. Pivot the product up the needs ladder. Drag the slider on the canvas to calibrate the marketing angle to Esteem & Status!",
+          "Help the consumer reach purchase completion. Drag the strategic marketing antidotes from the bottom deck and drop them into the matching stages of the journey pipeline to eradicate friction!",
+          "Quantify qualitative market sentiment. Tap the adjustment circles on the canvas sliders to modify consumer belief ($b_i$) and importance weight ($e_i$). Optimize overall brand attitude score $A_o \\ge 175$ to outperform competitors!"
+        ],
+        
+        resetBtn: ["Reset Task", "Reset Sockets"],
+        nextBtnComplete: "Next Step →",
+        nextBtnIncomplete: "Complete Task First",
+        expanderTitle: "🔍 Theoretical Framework & Micro-Data",
+        
+        // Modal Texts
+        modalTitle: "Mastery in Consumer Behaviour",
+        modalQuote: '"Successful marketing connects foundational psychological needs directly to robust commercial metrics. Today, you calibrated behavioral alignment, decoupled client roles, and modeled mathematically valid sentiment scorecards."',
+        modalCloseBtn: "Return to Dashboard",
+        
+        // Canvas Labels specific to Game 1
+        g1CustLabel: "Buyer: Parent (Customer)",
+        g1ConsLabel: "End-User: Child (Consumer)",
+        g1CustSub: "Financial / Security Specs",
+        g1ConsSub: "Tactile UX / Gameplay Visuals",
+        
+        // Game 1 node text
+        g1NodeTxt: [
+          "Security Parental Limits",
+          "Rainbow Stylus Touch Pen",
+          "12-Month Installment Scheme",
+          "Bright Animated Mini Games",
+          "Heavy Drop-Proof Shell",
+          "Direct Cute Badge Rewards"
+        ],
+
+        // Game 2 Canvas
+        g2SliderLabel: "Psychographic Calibration",
+        g2PyramidLabels: ["Self-Actualization", "Esteem / Status Needs", "Social & Belonging", "Safety & Protection", "Physiological Needs"],
+        g2FeedbackText: [
+          "Wrong: Pricing too high for physiological tier!",
+          "Wrong: basic safety features don't justify $450 ring.",
+          "Correct! High status pitch perfectly matches premium price tag.",
+          "Incorrect: Personal potential is too niche without luxury appeal."
+        ],
+
+        // Game 3 Node labels (Antidotes - No A,B,C clues!)
+        g3NodeLabels: [
+          "Emotional Story Video",
+          "Search Engine SEO",
+          "Competitor Matrix Grid",
+          "Seamless 1-Click Checkout",
+          "Reassurance Warranty Support"
+        ],
+        g3StageLabels: [
+          "1. Need Recognition",
+          "2. Info Search",
+          "3. Alt Evaluation",
+          "4. Buy Decision",
+          "5. Post-Purchase"
+        ],
+        g3FrictionLabels: [
+          "Desire Gap",
+          "Search Loss",
+          "Specification Hesitance",
+          "Checkout Dropouts",
+          "Remorse & Dissonance"
+        ],
+
+        // Game 4 labels
+        g4Labels: [
+          "Prestige & Status",
+          "Sensors Precision",
+          "Low Cost (Affordability)"
+        ],
+        g4MathTxt: "Overall Attitude Score Formula: Ao = Σ (bi × ei)"
+      },
+      si: {
+        headerTitle: "මොඩියුලය 5: පරිභෝජක හැසිරීම් විශ්ලේෂණය",
+        canvasOverlayPrompt: "සජීවී අනුකරණය ක්‍රියාකාරීයි",
+        successRibbonTxt: "කාර්යය තහවුරුයි",
+        badgeBtnTxt: "පදක්කම අගුළු දමා ඇත",
+        badgeBtnTxtUnlocked: "පදක්කම ලබාගන්න",
+        langIndicator: "English",
+        footerBrand: "OBISL කැම්පස්",
+        footerCreds: "සංකල්පය මයිකල් රනුක ගමගේ | CMS අලෙවිකරණ කුසලතා සහතිකය",
+        tabs: ["ගැනුම්කරු vs පරිශීලක", "අවශ්‍යතා ධුරාවලිය", "තීරණ ගැනීමේ මග", "ෆිෂ්බයින් ආකෘතිය"],
+        
+        // Start Gate overlays
+        startTitle: [
+          "ද්විභේදය: මව්පියන් සහ දරුවාගේ ප්‍රචාරණය",
+          "Aura Fitness: මනෝවිද්‍යාත්මක ක්‍රමාංකනය",
+          "තීරණ මග: බාධා-මර්දන නළ මාර්ගය",
+          "ෆිෂ්බයින් ආකෘතිය: උපායමාර්ගික තුලනය"
+        ],
+        startInstructions: [
+          "ළමා අධ්‍යාපනික ටැබ්ලට් පරිගණකයක් වෙළඳපලට හඳුන්වාදීමේදී මූල්‍ය ගැනුම්කරු සහ සැබෑ පරිශීලකයා වෙන්කර හඳුනාගත යුතුය.\n\nඋපදෙස්: පහළ රාක්කයේ ඇති අලෙවිකරණ උපක්‍රම නිවැරදි බහාලුම වෙත (මව්පියන්: ගැනුම්කරු / දරුවා: පරිශීලකයා) ඇද දමන්න. නිවැරදිව ස්ථානගත කිරීමෙන් අලෙවිය තහවුරු කරන්න.",
+          "Aura Fitness ස්මාර්ට් මුදුව සරල තාක්ෂණික දත්ත භාවිතයෙන් වෙළඳපලට නිකුත් කිරීම නිසා මුලින් අසාර්ථක විය.\n\nඋපදෙස්: අධික මිලැති භාණ්ඩ හුදෙක් සෞඛ්‍ය දත්ත මත පමණක් අලෙවි කළ නොහැක. ස්ලයිඩරය 'ගෞරව සහ තත්ත්ව' (Esteem) මට්ටම වෙත ඇද 'පරීක්ෂා කරන්න' බොත්තම ඔබන්න.",
+          "පාරිභෝගිකයා තීරණ ගැනීමේ මාවතේ අවසානය කරා සාර්ථකව මෙහෙයවන්න.\n\nඋපදෙස්: පාරිභෝගිකයා එක් එක් අවධියේදී මුහුණ දෙන බාධා හඳුනාගන්න. පහත ඇති නිවැරදි අලෙවිකරණ පිළියම් අදාළ ස්ථානවලට (1 සිට 5) ඇද දමා නළ මාර්ගයේ බාධා ඉවත් කරන්න.",
+          "ගුණාත්මක පරිභෝජක ආකල්ප ප්‍රමාණාත්මක වෙළඳපල ලකුණු කාඩ්පතක් (Ao) ලෙස ගණනය කරන්න.\n\nඋපදෙස්: තරඟකරුගේ ලකුණු ප්‍රමාණය 170කි. අපගේ නිෂ්පාදනයේ විශ්වාසී මට්ටම් (bi) සහ වැදගත්කම (ei) ස්ලයිඩර් මඟින් වෙනස් කර 175 සීමාව පසුකර, 'තහවුරු කරන්න' බොත්තම ඔබන්න."
+        ],
+        btnStart: "ක්‍රියාකාරකම අරඹන්න",
+
+        cardTitles: [
+          "ද්විභේදය: ගනුදෙනුකරු සහ පරිභෝජකයා",
+          "විචල්‍ය ක්‍රමාංකකය: අවශ්‍යතා ගැලපීම",
+          "ක්‍රමානුගත නළ මාර්ගය: තීරණ ගැනීමේ ක්‍රියාවලිය",
+          "ක්‍රමවත් තුලනය: ෆිෂ්බයින් ආකෘතිය"
+        ],
+        cardDescs: [
+          "අලෙවිකරුවන් මිලදී ගැනීමේ ක්‍රියාවලිය (ගනුදෙනුකරුගේ කාර්යභාරය) සැබෑ නිෂ්පාදන උපයෝගිතාවයෙන් (පරිභෝජකයාගේ කාර්යභාරය) වෙන්කර හඳුනාගත යුතුය. ඉලක්කගත අලෙවිකරණය සැකසීමට කැන්වසය මත ඇති නෝඩ් නිවැරදි බහාලුම්වලට ඇද දමන්න.",
+          "මිල අධික Aura Smart Ring ($450) මුලින් අසාර්ථක වූයේ සාමාන්‍ය පාරිභෝගිකයින්ගේ මිල අපේක්ෂාව $200 සීමාවක පැවති බැවිනි. නිෂ්පාදනය අවශ්‍යතා ධුරාවලියේ ඉහළට ඔසවන්න. අලෙවිකරණ සන්නිවේදනය ගෞරව සහ පිළිගැනීමේ (Esteem) තලයට ගැලපීමට ස්ලයිඩරය අදින්න!",
+          "පාරිභෝගිකයා තීරණ ගැනීමේ මාවතේ අවසානය කරා සාර්ථකව මෙහෙයවන්න. නළ මාර්ගයේ බාධා ඉවත් කිරීමට පහත ඇති නිවැරදි අලෙවිකරණ පිළියම් අදාළ ස්ථානවලට ඇද දමන්න.",
+          "ගුණාත්මක වෙළඳපල ආකල්ප ප්‍රමාණාත්මකව මැන බැලීම. පරිභෝජක විශ්වාසය ($b_i$) සහ වැදගත්කමේ මට්ටම ($e_i$) වෙනස් කිරීමට කැන්වස් ස්ලයිඩර්වල ඇති රවුම් ක්ලික් කරන්න. තරඟකරුවන් අභිබවා යාමට ආකල්ප ලකුණු $A_o \\ge 175$ දක්වා ප්‍රශස්ත කරන්න!"
+        ],
+        
+        resetBtn: ["කාර්යය නැවත සකසන්න", "ස්ථාන නැවත සකසන්න"],
+        nextBtnComplete: "මීළඟ පියවර →",
+        nextBtnIncomplete: "පළමුව කාර්යය සම්පූර්ණ කරන්න",
+        expanderTitle: "🔍 න්‍යායාත්මක රාමුව සහ දත්ත විශ්ලේෂණය",
+        
+        // Modal Texts
+        modalTitle: "පරිභෝජක හැසිරීම් පිළිබඳ ප්‍රවීණතාව",
+        modalQuote: '"සාර්ථක අලෙවිකරණයක් මඟින් මූලික මනෝවිද්‍යාත්මක අවශ්‍යතා සෘජුවම ශක්තිමත් වාණිජමය මිනුම්දඬු සමඟ සම්බන්ධ කරයි. අද දින ඔබ චර්යාත්මක ගැළපීම් ක්‍රමාංකනය කර, සේවාදායක භූමිකාවන් වෙන්කර හඳුනාගෙන, ගණිතමය වශයෙන් වලංගු ආකල්ප ලකුණු කාඩ්පතක් නිර්මාණය කළේය."',
+        modalCloseBtn: "ආපසු පාලක පුවරුවට",
+        
+        // Canvas Labels specific to Game 1
+        g1CustLabel: "ගැනුම්කරු: මව්පියන් (Customer)",
+        g1ConsLabel: "පරිශීලක: දරුවා (Consumer)",
+        g1CustSub: "මූල්‍ය ආරක්ෂණය / සීමාවන්",
+        g1ConsSub: "සංවේදන පරිශීලක අත්දැකීම්",
+        
+        // Game 1 node text
+        g1NodeTxt: [
+          "මව්පිය ආරක්ෂණ සීමා",
+          "දේදුන්න ස්ටයිලස් පෑන",
+          "මාස 12 පොලී රහිත ගෙවීම්",
+          "වර්ණවත් සජීවී ක්‍රීඩා",
+          "මාරක වැටීම් ඔරොත්තු දෙන කවරය",
+          "ක්‍රීඩා ජයග්‍රහණ ලකුණු"
+        ],
+
+        // Game 2 Canvas
+        g2SliderLabel: "මානසික අවශ්‍යතා ක්‍රමාංකනය",
+        g2PyramidLabels: ["ස්වයං-සාක්ෂාත්කරණය", "ගෞරව / තත්ත්ව අවශ්‍යතා", "සමාජීය අවශ්‍යතා", "ආරක්ෂණ අවශ්‍යතා", "භෞතික අවශ්‍යතා"],
+        g2FeedbackText: [
+          "වැරදියි: භෞතික අවශ්‍යතා තලයට මිල ඉතා ඉහළයි!",
+          "වැරදියි: සරල ආරක්ෂණ විශේෂාංග $450ක මිල සාධාරණීකරණය නොකරයි.",
+          "නිවැරදියි! ගෞරව සහ තත්ත්ව Pitch එක ඉහළ මිලකට හොඳින්ම ගැලපේ.",
+          "වැරදියි: සුඛෝපභෝගී ආකර්ෂණයක් නොමැතිව පුද්ගලික විභවය පමණක් ප්‍රමාණවත් නොවේ."
+        ],
+
+        // Game 3 Node labels
+        g3NodeLabels: [
+          "හැඟීම්බර වීඩියෝව",
+          "සෙවුම් යන්ත්‍ර ප්‍රශස්තකරණය (SEO)",
+          "සංසන්දනාත්මක සටහන",
+          "සරල එක ක්ලික් ගෙවීම් ක්‍රමය",
+          "වගකීම් සහ පාරිභෝගික සහාය"
+        ],
+        g3StageLabels: [
+          "1. අවශ්‍යතාවය හඳුනාගැනීම",
+          "2. තොරතුරු සෙවීම",
+          "3. විකල්ප ඇගයීම",
+          "4. මිලදී ගැනීමේ තීරණය",
+          "5. මිලදී ගැනීමෙන් පසු හැසිරීම"
+        ],
+        g3FrictionLabels: [
+          "ආශාවේ අඩුව",
+          "සෙවුම් අතරමං වීම්",
+          "විස්තර පිළිබඳ සැකය",
+          "ගෙවීම් ප්‍රමාද බාධා",
+          "මිලදී ගත් පසු පසුතැවිල්ල"
+        ],
+
+        // Game 4 labels
+        g4Labels: [
+          "කීර්තිය සහ අභිමානය",
+          "බැටරි ආයු කාලය",
+          "සාධාරණ මිල අගය"
+        ],
+        g4MathTxt: "සමස්ත ආකල්ප ලකුණු සූත්‍රය: Ao = Σ (bi × ei)"
+      }
+    };
+
+    // ==================== 2. INITIALIZATION ENGINE ====================
+    window.onload = function() {
+      canvas = document.getElementById("interactiveCanvas");
+      ctx = canvas.getContext("2d");
+      
+      // Attach Mobile Gesture Overrides (Rule 3)
+      canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+      canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+      canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+      
+      // Desktop Listeners
+      canvas.addEventListener("mousedown", onMouseDown);
+      canvas.addEventListener("mousemove", onMouseMove);
+      canvas.addEventListener("mouseup", onMouseUp);
+
+      // Window resize adaptation
+      window.addEventListener("resize", handleResize);
+      
+      // Initialize translation and tab active indicators
+      updateBilingualUI();
+      switchTab(0);
+      
+      // Run the unified high-precision requestAnimationFrame rendering loop
+      renderLoop();
+    };
+
+    function handleResize() {
+      const containerRect = canvas.parentNode.getBoundingClientRect();
+      
+      // Maintain High-DPI crisp drawings on canvas
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = containerRect.width * dpr;
+      canvas.height = containerRect.height * dpr;
+      canvas.style.width = containerRect.width + "px";
+      canvas.style.height = containerRect.height + "px";
+      ctx.scale(dpr, dpr);
+      
+      // Setup the dynamic geometric positioning for games
+      recalcLayout(containerRect.width, containerRect.height);
+    }
+
+    function recalcLayout(w, h) {
+      const halfW = w / 2;
+      
+      // ---- SETUP GAME 1 GEOMETRY (Top containers, bottom horizontal shelf) ----
+      g1Containers = [
+        { id: 'customer', x: 15, y: 15, w: halfW - 25, h: h * 0.58 },
+        { id: 'consumer', x: halfW + 10, y: 15, w: halfW - 25, h: h * 0.58 }
+      ];
+
+      if (g1Nodes.length === 0) {
+        resetGame1(w, h);
+      } else {
+        g1Nodes.forEach((node, idx) => {
+          if (!node.docked && !node.isDragging) {
+            // Line up in the middle of the holding shelf at the bottom
+            node.x = (w / 7) * (idx + 1);
+            node.y = h * 0.82;
+          } else if (node.docked) {
+            const dest = node.currentContainer === 'customer' ? g1Containers[0] : g1Containers[1];
+            if (node.offsetX === undefined) {
+              node.offsetX = (Math.random() - 0.5) * (dest.w - 65);
+              node.offsetY = (Math.random() - 0.5) * (dest.h - 90) + 15;
+            }
+            node.x = dest.x + dest.w / 2 + node.offsetX;
+            node.y = dest.y + dest.h / 2 + node.offsetY;
+          }
+        });
+      }
+
+      // ---- SETUP GAME 2 GEOMETRY ----
+      g2Slider.w = w * 0.6;
+      g2Slider.h = 10;
+      g2Slider.x = w * 0.2;
+      g2Slider.y = h - 25;
+
+      // ---- SETUP GAME 3 GEOMETRY (5 stage timeline sockets + bottom shelf) ----
+      const numSockets = 5;
+      const spacing = w / (numSockets + 1);
+      g3Sockets = [];
+      for (let i = 0; i < numSockets; i++) {
+        g3Sockets.push({
+          id: i,
+          x: spacing * (i + 1),
+          y: h * 0.28,
+          r: Math.min(22, w * 0.05),
+          lockedNode: null
+        });
+      }
+
+      if (g3Nodes.length === 0) {
+        resetGame3(w, h);
+      } else {
+        g3Nodes.forEach((node) => {
+          if (node.socketId !== null) {
+            const socket = g3Sockets[node.socketId];
+            node.x = socket.x;
+            node.y = socket.y;
+          } else if (!node.isDragging) {
+            node.x = spacing * (node.slotIdx + 1);
+            node.y = h * 0.78;
+          }
+        });
+      }
+
+      // ---- SETUP GAME 4 GEOMETRY (Fishbein layout with wide separate sliders and chart) ----
+      const numAttrs = 3;
+      const attrSpacingY = h / (numAttrs + 1.2);
+      g4Attributes = [];
+      
+      const initialMetrics = [
+        { b: 5, e: 6 }, // Prestige & Status
+        { b: 6, e: 7 }, // Sensor accuracy
+        { b: 4, e: 8 }  // Low Cost Affordability
+      ];
+
+      for (let i = 0; i < numAttrs; i++) {
+        g4Attributes.push({
+          id: i,
+          y: attrSpacingY * (i + 1.1),
+          b: initialMetrics[i].b,
+          e: initialMetrics[i].e,
+          bSliderX: w * 0.05,
+          eSliderX: w * 0.36,
+          sliderWidth: w * 0.28, // Double the touch area
+          radius: 11 // Enhanced touch target radius
+        });
+      }
+    }
+
+    // ==================== 3. RESETTERS AND LEVEL INITIALIZERS ====================
+    function resetGame1(w, h) {
+      const halfW = w / 2;
+      g1Nodes = [];
+      const targets = ['customer', 'consumer', 'customer', 'consumer', 'customer', 'consumer'];
+      
+      for (let i = 0; i < 6; i++) {
+        g1Nodes.push({
+          id: i,
+          x: (w / 7) * (i + 1),
+          y: h * 0.82,
+          r: Math.min(13, w * 0.035),
+          correctContainer: targets[i],
+          currentContainer: null,
+          docked: false,
+          color: i % 2 === 0 ? '#06b6d4' : '#10b981',
+          isDragging: false,
+          offsetX: undefined,
+          offsetY: undefined
+        });
+      }
+      g1Success = false;
+      stepsCompleted[0] = false;
+      updateStepStatusUI(0, false);
+    }
+
+    function resetGame3(w, h) {
+      g3Nodes = [];
+      const numSockets = 5;
+      const spacing = w / (numSockets + 1);
+      
+      // Shuffle starting index slots dynamically to eliminate mechanical clue patterns
+      let startSlots = [0, 1, 2, 3, 4];
+      startSlots.sort(() => Math.random() - 0.5);
+      
+      for (let i = 0; i < numSockets; i++) {
+        g3Nodes.push({
+          id: i,
+          correctSocket: i,
+          socketId: null,
+          slotIdx: startSlots[i],
+          x: spacing * (startSlots[i] + 1),
+          y: h * 0.78,
+          r: Math.min(16, w * 0.04),
+          color: '#f59e0b',
+          isDragging: false
+        });
+      }
+      g3Success = false;
+      stepsCompleted[2] = false;
+      updateStepStatusUI(2, false);
+    }
+
+    function triggerReset(step) {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
+      if (step === 0) resetGame1(w, h);
+      if (step === 2) resetGame3(w, h);
+      
+      triggerSuccessAnimate(false);
+    }
+
+    // ==================== 4. INTERACTION SYSTEM ====================
+    function onTouchStart(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      setCoordinates(touch);
+      isMouseDown = true;
+      handlePointerDown();
+    }
+
+    // Touch moves are decoupled from giving away correct target highlight
+    function onTouchMove(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      setCoordinates(touch);
+      handlePointerMove();
+    }
+
+    function onTouchEnd(e) {
+      e.preventDefault();
+      isMouseDown = false;
+      handlePointerUp();
+    }
+
+    function onMouseDown(e) {
+      setCoordinates(e);
+      isMouseDown = true;
+      handlePointerDown();
+    }
+
+    function onMouseMove(e) {
+      setCoordinates(e);
+      handlePointerMove();
+    }
+
+    function onMouseUp() {
+      isMouseDown = false;
+      handlePointerUp();
+    }
+
+    function setCoordinates(evt) {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = evt.clientX - rect.left;
+      mouseY = evt.clientY - rect.top;
+    }
+
+    function handlePointerDown() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
+
+      // 1. Check if we are inside a "Start Overlay Gate" screen
+      if (!gameActive[activeTab]) {
+        const btnW = 200;
+        const btnH = 38;
+        const btnX = (w - btnW) / 2;
+        const btnY = h * 0.72;
+        if (mouseX >= btnX && mouseX <= btnX + btnW && mouseY >= btnY && mouseY <= btnY + btnH) {
+          gameActive[activeTab] = true;
+          createImpactParticles(w / 2, btnY + 19, '#06b6d4');
+        }
+        return;
+      }
+
+      // 2. Active Game interactions
+      if (activeTab === 0 && !g1Success) {
+        for (let node of g1Nodes) {
+          const dx = mouseX - node.x;
+          const dy = mouseY - node.y;
+          // Increased hitbox with absolute grab offset calculations for seamless selection
+          if (Math.sqrt(dx * dx + dy * dy) < node.r + 25) { 
+            draggedElement = { type: 'g1Node', data: node, offsetX: dx, offsetY: dy };
+            node.isDragging = true;
+            node.docked = false;
+            node.currentContainer = null;
+            break;
+          }
+        }
+      } 
+      else if (activeTab === 1) {
+        const knobX = g2Slider.x + g2Slider.val * g2Slider.w;
+        const dx = mouseX - knobX;
+        const dy = mouseY - g2Slider.y;
+        if (Math.sqrt(dx * dx + dy * dy) < 22) {
+          g2Slider.isDragging = true;
+        }
+      } 
+      else if (activeTab === 2 && !g3Success) {
+        for (let node of g3Nodes) {
+          const dx = mouseX - node.x;
+          const dy = mouseY - node.y;
+          if (Math.sqrt(dx * dx + dy * dy) < node.r + 25) {
+            draggedElement = { type: 'g3Node', data: node, offsetX: dx, offsetY: dy };
+            node.isDragging = true;
+            if (node.socketId !== null) {
+              g3Sockets[node.socketId].lockedNode = null;
+              node.socketId = null;
+            }
+            break;
+          }
+        }
+      } 
+      else if (activeTab === 3 && !g4Success) {
+        for (let attr of g4Attributes) {
+          const bKnobX = attr.bSliderX + ((attr.b - 1) / 9) * attr.sliderWidth;
+          const dyB = mouseY - attr.y;
+          const dxB = mouseX - bKnobX;
+          if (Math.sqrt(dxB * dxB + dyB * dyB) < 24) { // Spacious touch target boundary
+            draggedElement = { type: 'g4Slider', data: attr, channel: 'b' };
+            break;
+          }
+
+          const eKnobX = attr.eSliderX + ((attr.e - 1) / 9) * attr.sliderWidth;
+          const dyE = mouseY - attr.y;
+          const dxE = mouseX - eKnobX;
+          if (Math.sqrt(dxE * dxE + dyE * dyE) < 24) {
+            draggedElement = { type: 'g4Slider', data: attr, channel: 'e' };
+            break;
+          }
+        }
+      }
+    }
+
+    function handlePointerMove() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
+
+      if (!gameActive[activeTab]) return;
+
+      if (draggedElement) {
+        if (draggedElement.type === 'g1Node' || draggedElement.type === 'g3Node') {
+          // Precise coordinate application utilizing relative offsets for premium movement fluidity
+          draggedElement.data.x = mouseX - draggedElement.offsetX;
+          draggedElement.data.y = mouseY - draggedElement.offsetY;
+        } 
+        else if (draggedElement.type === 'g4Slider') {
+          const attr = draggedElement.data;
+          const channel = draggedElement.channel;
+          const sliderLeft = channel === 'b' ? attr.bSliderX : attr.eSliderX;
+          const fraction = Math.max(0, Math.min(1, (mouseX - sliderLeft) / attr.sliderWidth));
+          const val = Math.round(1 + fraction * 9);
+          if (channel === 'b') attr.b = val;
+          else attr.e = val;
+        }
+      }
+
+      if (g2Slider.isDragging) {
+        const fraction = Math.max(0, Math.min(1, (mouseX - g2Slider.x) / g2Slider.w));
+        g2Slider.val = fraction;
+        updateG2CalibrationState();
+      }
+    }
+
+    function handlePointerUp() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
+
+      if (!gameActive[activeTab]) return;
+
+      if (draggedElement) {
+        if (draggedElement.type === 'g1Node') {
+          const node = draggedElement.data;
+          node.isDragging = false;
+          let activeBay = null;
+          
+          for (let bay of g1Containers) {
+            if (node.x >= bay.x && node.x <= bay.x + bay.w &&
+                node.y >= bay.y && node.y <= bay.y + bay.h) {
+              activeBay = bay;
+              break;
+            }
+          }
+
+          if (activeBay) {
+            // Allows docking anywhere inside either container for frictionless sorting
+            node.docked = true;
+            node.currentContainer = activeBay.id;
+            node.offsetX = node.x - (activeBay.x + activeBay.w / 2);
+            node.offsetY = node.y - (activeBay.y + activeBay.h / 2);
+            
+            const isCorrect = activeBay.id === node.correctContainer;
+            createImpactParticles(node.x, node.y, isCorrect ? '#10b981' : '#f43f5e');
+            verifyGame1Success();
+          } else {
+            // Springs back exactly to its default shelf position at the bottom-middle
+            node.x = (w / 7) * (node.id + 1);
+            node.y = h * 0.82;
+            node.docked = false;
+            node.currentContainer = null;
+            node.offsetX = undefined;
+            node.offsetY = undefined;
+            createImpactParticles(node.x, node.y, '#f43f5e');
+            verifyGame1Success();
+          }
+        } 
+        else if (draggedElement.type === 'g3Node') {
+          const node = draggedElement.data;
+          node.isDragging = false;
+          let snapSocket = null;
+          let minDist = 40;
+
+          for (let socket of g3Sockets) {
+            if (socket.lockedNode === null) {
+              const dx = node.x - socket.x;
+              const dy = node.y - socket.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < minDist) {
+                snapSocket = socket;
+                minDist = dist;
+              }
+            }
+          }
+
+          if (snapSocket && snapSocket.id === node.correctSocket) {
+            node.x = snapSocket.x;
+            node.y = snapSocket.y;
+            node.socketId = snapSocket.id;
+            snapSocket.lockedNode = node;
+            createImpactParticles(node.x, node.y, '#10b981');
+            verifyGame3Success();
+          } else {
+            // Springs back to its exact randomized deck shelf slot
+            const spacing = w / (5 + 1);
+            node.x = spacing * (node.slotIdx + 1);
+            node.y = h * 0.78;
+            node.socketId = null;
+            createImpactParticles(node.x, node.y, '#f43f5e');
+          }
+        }
+        draggedElement = null;
+      }
+      g2Slider.isDragging = false;
+    }
+
+    // ==================== 5. SIMULATION VERIFICATION LOGICS ====================
+    function verifyGame1Success() {
+      const allDocked = g1Nodes.every(n => n.docked);
+      const allCorrect = g1Nodes.every(n => n.docked && n.currentContainer === n.correctContainer);
+      if (allDocked && allCorrect) {
+        g1Success = true;
+        stepsCompleted[0] = true;
+        triggerSuccessAnimate(true);
+        updateStepStatusUI(0, true);
+        enableNextButton(0);
+      } else {
+        g1Success = false;
+        stepsCompleted[0] = false;
+        updateStepStatusUI(0, false);
+        
+        // Revert next-step button layout dynamically if un-verified
+        const nextBtn = document.getElementById("nextBtn0");
+        if (nextBtn && nextBtn.classList.contains("bg-cyberCyan")) {
+          nextBtn.classList.remove("bg-cyberCyan", "text-slate-950", "hover:bg-cyan-400", "font-extrabold", "cursor-pointer");
+          nextBtn.classList.add("bg-slate-800", "text-slate-500", "cursor-not-allowed");
+          nextBtn.innerHTML = translations[currentLanguage].nextBtnIncomplete;
+        }
+      }
+    }
+
+    function updateG2CalibrationState() {
+      const level = Math.floor(g2Slider.val * 4.9);
+      const labels = translations[currentLanguage].g2FeedbackText;
+      if (level === 0) {
+        g2ScaleState = labels[0];
+      } else if (level === 1 || level === 2) {
+        g2ScaleState = labels[1];
+      } else if (level === 3) {
+        g2ScaleState = labels[2];
+      } else {
+        g2ScaleState = labels[3];
+      }
+    }
+
+    function testCalibration() {
+      const level = Math.floor(g2Slider.val * 4.9);
+      if (level === 3) {
+        g2Success = true;
+        stepsCompleted[1] = true;
+        triggerSuccessAnimate(true);
+        updateStepStatusUI(1, true);
+        enableNextButton(1);
+      } else {
+        g2Success = false;
+        createImpactParticles(g2Slider.x + g2Slider.val * g2Slider.w, g2Slider.y, '#f43f5e');
+      }
+    }
+
+    function verifyGame3Success() {
+      const allSocketsCorrect = g3Nodes.every(n => n.socketId === n.correctSocket);
+      if (allSocketsCorrect) {
+        g3Success = true;
+        stepsCompleted[2] = true;
+        triggerSuccessAnimate(true);
+        updateStepStatusUI(2, true);
+        enableNextButton(2);
+      }
+    }
+
+    function verifyFishbein() {
+      let total = 0;
+      g4Attributes.forEach(attr => {
+        total += attr.b * attr.e;
+      });
+      g4CurrentAo = total;
+
+      if (g4CurrentAo >= g4TargetScore) {
+        g4Success = true;
+        stepsCompleted[3] = true;
+        triggerSuccessAnimate(true);
+        updateStepStatusUI(3, true);
+        
+        // Unlock badge capability
+        const badgeBtn = document.getElementById("badgeUnlockBtn");
+        badgeBtn.className = "px-4 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-[11px] rounded transition duration-150 glow-gold cursor-pointer";
+        badgeBtn.innerHTML = `🏆 ${translations[currentLanguage].badgeBtnTxtUnlocked}`;
+      } else {
+        g4Success = false;
+        createImpactParticles(canvas.width / (window.devicePixelRatio * 2), canvas.height / (window.devicePixelRatio * 2), '#f43f5e');
+      }
+    }
+
+    // ==================== 6. HIGH-PRECISION GRAPHICS RENDERING ====================
+    function renderLoop() {
+      ctx.fillStyle = '#060a1c';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
+
+      if (!gameActive[activeTab]) {
+        drawStartScreen(w, h);
+      } else {
+        if (activeTab === 0) {
+          renderGame1(w, h);
+        } else if (activeTab === 1) {
+          renderGame2(w, h);
+        } else if (activeTab === 2) {
+          renderGame3(w, h);
+        } else if (activeTab === 3) {
+          renderGame4(w, h);
+        }
+      }
+
+      drawParticles();
+      requestAnimationFrame(renderLoop);
+    }
+
+    // ---- RENDER ENTRY GATES / START SCREEN ----
+    function drawStartScreen(w, h) {
+      const lang = translations[currentLanguage];
+      
+      // Cyber Radial glow background
+      const radGrd = ctx.createRadialGradient(w/2, h/2, 20, w/2, h/2, w*0.7);
+      radGrd.addColorStop(0, '#0d1636');
+      radGrd.addColorStop(1, '#050814');
+      ctx.fillStyle = radGrd;
+      ctx.fillRect(0, 0, w, h);
+
+      // Glassmorphism Main container
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      drawRoundRect(ctx, 20, 20, w - 40, h - 40, 12, true, true);
+
+      // Title
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 13px Space Grotesk, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(lang.startTitle[activeTab].toUpperCase(), w / 2, 45);
+
+      // Instructions Wrapped text
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '10px Noto Sans, Noto Sans Sinhala';
+      wrapText(ctx, lang.startInstructions[activeTab], w / 2, 70, w - 80, 15);
+
+      // Start Button
+      const btnW = 200;
+      const btnH = 38;
+      const btnX = (w - btnW) / 2;
+      const btnY = h * 0.72;
+
+      // Glow effect under start button
+      ctx.save();
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.2)';
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 2;
+      drawRoundRect(ctx, btnX, btnY, btnW, btnH, 8, true, true);
+      ctx.restore();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 11px Space Grotesk, Noto Sans Sinhala';
+      ctx.textAlign = 'center';
+      ctx.fillText(lang.btnStart, w / 2, btnY + 23);
+    }
+
+    // Wrap Text Utility
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+      const paragraphs = text.split('\n\n');
+      let currentY = y;
+
+      paragraphs.forEach(p => {
+        const words = p.split(' ');
+        let line = '';
+        for(let n = 0; n < words.length; n++) {
+          let testLine = line + words[n] + ' ';
+          let metrics = context.measureText(testLine);
+          if (metrics.width > maxWidth && n > 0) {
+            context.fillText(line, x, currentY);
+            line = words[n] + ' ';
+            currentY += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        context.fillText(line, x, currentY);
+        currentY += lineHeight + 8; // Extra spacing between paragraph breaks
+      });
+    }
+
+    // ---- RENDERING G1: DUAL VECTOR CAMPAIGN DECOUPLER ----
+    function renderGame1(w, h) {
+      const labels = translations[currentLanguage];
+      
+      // 1. Draw central Campaign Parameter Shelf boundary visually
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.1)';
+      ctx.lineWidth = 1;
+      drawRoundRect(ctx, 15, h * 0.68, w - 30, h * 0.28, 8, true, true);
+      
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
+      ctx.font = 'bold 8px Space Grotesk, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(currentLanguage === 'en' ? "LAUNCH PARAMETER DECK" : "ප්‍රචාරණ උපක්‍රම තටුව", w / 2, h * 0.73);
+      ctx.restore();
+
+      // 2. Vessels
+      g1Containers.forEach(bay => {
+        // Redesigned: Check if currently dragging any node over this specific container (No correctness giveaway highlight!)
+        const isHovered = draggedElement && draggedElement.type === 'g1Node' &&
+                          draggedElement.data.x >= bay.x && draggedElement.data.x <= bay.x + bay.w &&
+                          draggedElement.data.y >= bay.y && draggedElement.data.y <= bay.y + bay.h;
+
+        ctx.save();
+        ctx.shadowColor = isHovered ? '#06b6d4' : '#06b6d4';
+        ctx.shadowBlur = isHovered ? 15 : 4;
+        
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+        ctx.strokeStyle = isHovered ? '#06b6d4' : 'rgba(6, 182, 212, 0.4)';
+        ctx.lineWidth = 2;
+        
+        drawRoundRect(ctx, bay.x, bay.y, bay.w, bay.h, 12, true, true);
+        
+        // Headers
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px Space Grotesk, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(bay.id === 'customer' ? labels.g1CustLabel : labels.g1ConsLabel, bay.x + bay.w / 2, bay.y + 20);
+        
+        ctx.font = '8px Noto Sans, Noto Sans Sinhala';
+        ctx.fillStyle = isHovered ? '#06b6d4' : '#94a3b8';
+        ctx.fillText(bay.id === 'customer' ? labels.g1CustSub : labels.g1ConsSub, bay.x + bay.w / 2, bay.y + 32);
+        
+        ctx.restore();
+      });
+
+      // 3. Scattered & Docked Elements
+      g1Nodes.forEach(node => {
+        ctx.save();
+        
+        let strokeColor = node.color;
+        let fillColor = node.docked ? 'rgba(30, 41, 59, 0.4)' : 'rgba(30, 41, 59, 0.95)';
+        
+        // Render dynamic color indicators based on correct/incorrect docking (Calculated post-drop only!)
+        if (node.docked) {
+          if (node.currentContainer === node.correctContainer) {
+            strokeColor = '#10b981'; // Green for correct placement
+            fillColor = 'rgba(16, 185, 129, 0.15)';
+          } else {
+            strokeColor = '#f43f5e'; // Red-orange for incorrect placement
+            fillColor = 'rgba(244, 63, 94, 0.15)';
+          }
+        }
+        
+        ctx.shadowColor = strokeColor;
+        ctx.shadowBlur = node.isDragging ? 18 : (node.docked ? 12 : 6);
+        ctx.fillStyle = fillColor;
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px Space Grotesk, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String.fromCharCode(65 + node.id), node.x, node.y);
+
+        // Hover tooltip text
+        const isHovered = Math.sqrt(Math.pow(mouseX - node.x, 2) + Math.pow(mouseY - node.y, 2)) < node.r + 15;
+        if (!node.docked || isHovered) {
+          ctx.font = 'bold 8px Noto Sans, Noto Sans Sinhala';
+          const txt = labels.g1NodeTxt[node.id];
+          const txtW = ctx.measureText(txt).width + 10;
+          
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = 1;
+          drawRoundRect(ctx, node.x - txtW / 2, node.y - node.r - 20, txtW, 14, 4, true, true);
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.fillText(txt, node.x, node.y - node.r - 11);
+        }
+
+        ctx.restore();
+      });
+    }
+
+    // ---- RENDERING G2: PYRAMID NEED CALIBRATOR ----
+    function renderGame2(w, h) {
+      const labels = translations[currentLanguage];
+      
+      const pW = w * 0.65;
+      const pH = h * 0.55;
+      const pX = w / 2;
+      const pY = h * 0.08;
+      
+      const numTiers = 5;
+      const stepH = pH / numTiers;
+      const activeIdx = Math.floor(g2Slider.val * 4.9);
+
+      for (let i = 0; i < numTiers; i++) {
+        const tierIdx = 4 - i;
+        const isActive = tierIdx === activeIdx;
+        const widthBottom = pW * ((i + 1) / numTiers);
+        const widthTop = pW * (i / numTiers);
+        
+        ctx.save();
+        ctx.shadowColor = isActive ? '#fbbf24' : 'transparent';
+        ctx.shadowBlur = 12;
+        
+        const gradient = ctx.createLinearGradient(pX - widthBottom / 2, 0, pX + widthBottom / 2, 0);
+        if (isActive) {
+          gradient.addColorStop(0, '#d97706');
+          gradient.addColorStop(0.5, '#fbbf24');
+          gradient.addColorStop(1, '#b45309');
+        } else {
+          gradient.addColorStop(0, '#1e293b');
+          gradient.addColorStop(1, '#0f172a');
+        }
+        
+        ctx.fillStyle = gradient;
+        ctx.strokeStyle = isActive ? '#fbbf24' : 'rgba(148, 163, 184, 0.2)';
+        ctx.lineWidth = isActive ? 2 : 1;
+
+        ctx.beginPath();
+        ctx.moveTo(pX - widthTop / 2, pY + i * stepH);
+        ctx.lineTo(pX + widthTop / 2, pY + i * stepH);
+        ctx.lineTo(pX + widthBottom / 2, pY + (i + 1) * stepH);
+        ctx.lineTo(pX - widthBottom / 2, pY + (i + 1) * stepH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = isActive ? '#ffffff' : '#94a3b8';
+        ctx.font = isActive ? 'bold 10px Space Grotesk, sans-serif' : '8px Noto Sans, Noto Sans Sinhala';
+        ctx.textAlign = 'center';
+        ctx.fillText(labels.g2PyramidLabels[i], pX, pY + i * stepH + stepH / 2 + 3);
+
+        ctx.restore();
+      }
+
+      // Live Calibration Strategy Output Feed
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = g2Success ? '#10b981' : '#f59e0b';
+      ctx.lineWidth = 1;
+      drawRoundRect(ctx, w * 0.1, h * 0.68, w * 0.8, 22, 6, true, true);
+      
+      ctx.fillStyle = g2Success ? '#10b981' : '#ffffff';
+      ctx.font = 'bold 9px Noto Sans, Noto Sans Sinhala';
+      ctx.textAlign = 'center';
+      ctx.fillText(g2ScaleState, w / 2, h * 0.74);
+
+      // Calibration Control Slider
+      ctx.fillStyle = '#1e293b';
+      drawRoundRect(ctx, g2Slider.x, g2Slider.y - g2Slider.h / 2, g2Slider.w, g2Slider.h, 4, true, false);
+      
+      ctx.fillStyle = '#f59e0b';
+      drawRoundRect(ctx, g2Slider.x, g2Slider.y - g2Slider.h / 2, g2Slider.val * g2Slider.w, g2Slider.h, 4, true, false);
+
+      const knobX = g2Slider.x + g2Slider.val * g2Slider.w;
+      ctx.save();
+      ctx.shadowColor = '#f59e0b';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(knobX, g2Slider.y, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#f59e0b';
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.font = 'bold 8px Space Grotesk, sans-serif';
+      ctx.fillStyle = '#f59e0b';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels.g2SliderLabel.toUpperCase(), w / 2, g2Slider.y - 12);
+    }
+
+    // ---- RENDERING G3: CHRONOLOGICAL ANTIDOTE PIPELINE ----
+    function renderGame3(w, h) {
+      const labels = translations[currentLanguage];
+
+      // Draw horizontal track pipeline connectors
+      ctx.strokeStyle = g3Success ? '#10b981' : '#334155';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(g3Sockets[0].x, h * 0.28);
+      ctx.lineTo(g3Sockets[g3Sockets.length - 1].x, h * 0.28);
+      ctx.stroke();
+
+      // Render stage sockets with active friction warnings if empty (No letters clue inside)
+      g3Sockets.forEach((socket, idx) => {
+        const isOccupied = socket.lockedNode !== null;
+        
+        ctx.save();
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = isOccupied ? '#10b981' : '#f43f5e';
+        ctx.lineWidth = 2;
+        ctx.setLineDash(isOccupied ? [] : [3, 3]);
+
+        ctx.beginPath();
+        ctx.arc(socket.x, socket.y, socket.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Socket center represents step sequence order (1 to 5) rather than letters
+        ctx.setLineDash([]);
+        ctx.fillStyle = isOccupied ? '#10b981' : 'rgba(148, 163, 184, 0.4)';
+        ctx.font = 'bold 11px Space Grotesk, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(idx + 1, socket.x, socket.y);
+
+        // Journey Stage header text above socket
+        ctx.font = 'bold 7px Noto Sans, Noto Sans Sinhala';
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'center';
+        ctx.fillText(labels.g3StageLabels[idx], socket.x, socket.y - socket.r - 20);
+
+        // Friction alert text directly underneath if unoccupied
+        if (!isOccupied) {
+          ctx.font = 'bold 7px Noto Sans, Noto Sans Sinhala';
+          ctx.fillStyle = '#f43f5e';
+          ctx.fillText(`⚠️ ${labels.g3FrictionLabels[idx]}`, socket.x, socket.y + socket.r + 14);
+        } else {
+          ctx.font = 'bold 7px Noto Sans, Noto Sans Sinhala';
+          ctx.fillStyle = '#10b981';
+          ctx.fillText("✓ MITIGATED", socket.x, socket.y + socket.r + 14);
+        }
+
+        ctx.restore();
+      });
+
+      // Bottom deck holding shelf frame
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.1)';
+      ctx.lineWidth = 1;
+      drawRoundRect(ctx, 15, h * 0.65, w - 30, h * 0.31, 8, true, true);
+      
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
+      ctx.font = 'bold 8px Space Grotesk, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(currentLanguage === 'en' ? "STRATEGIC ANTIDOTES" : "අලෙවිකරණ පිළියම් රාක්කය", w / 2, h * 0.70);
+      ctx.restore();
+
+      // Render draggable block nodes with generic star designator inside
+      g3Nodes.forEach(node => {
+        ctx.save();
+        ctx.shadowColor = node.color;
+        ctx.shadowBlur = node.isDragging ? 15 : 6;
+        
+        ctx.fillStyle = node.socketId !== null ? 'rgba(16, 185, 129, 0.15)' : 'rgba(30, 41, 59, 0.95)';
+        ctx.strokeStyle = node.socketId !== null ? '#10b981' : node.color;
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px Space Grotesk, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText("✦", node.x, node.y);
+
+        // Floating tooltip showing complete descriptions without starting letter hints
+        const isHovered = Math.sqrt(Math.pow(mouseX - node.x, 2) + Math.pow(mouseY - node.y, 2)) < node.r + 15;
+        if (node.socketId === null || isHovered) {
+          ctx.font = 'bold 8px Noto Sans, Noto Sans Sinhala';
+          const txt = labels.g3NodeLabels[node.id];
+          const txtW = ctx.measureText(txt).width + 8;
+          
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+          ctx.strokeStyle = node.socketId !== null ? '#10b981' : node.color;
+          ctx.lineWidth = 1;
+          drawRoundRect(ctx, node.x - txtW / 2, node.y - node.r - 21, txtW, 14, 4, true, true);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.fillText(txt, node.x, node.y - node.r - 14);
+        }
+
+        ctx.restore();
+      });
+    }
+
+    // ---- RENDERING G4: FISHBEIN MODEL INTERACTIVE BALANCE GRAPH ----
+    function renderGame4(w, h) {
+      const labels = translations[currentLanguage];
+
+      // Dynamic Mathematical Score Card Equation Box
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 1;
+      drawRoundRect(ctx, w * 0.05, h * 0.03, w * 0.9, 20, 6, true, true);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 8px Noto Sans, Noto Sans Sinhala';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels.g4MathTxt, w / 2, h * 0.08);
+
+      // Render sliders for qualitative attribute parameters (Belief & Importance)
+      g4Attributes.forEach(attr => {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = 'bold 8.5px Noto Sans, Noto Sans Sinhala';
+        ctx.textAlign = 'left';
+        ctx.fillText(labels.g4Labels[attr.id], w * 0.05, attr.y - 11);
+
+        // Draw track column B (Belief)
+        ctx.fillStyle = '#1e293b';
+        drawRoundRect(ctx, attr.bSliderX, attr.y - 3, attr.sliderWidth, 6, 2, true, false);
+        ctx.fillStyle = '#06b6d4';
+        drawRoundRect(ctx, attr.bSliderX, attr.y - 3, ((attr.b - 1) / 9) * attr.sliderWidth, 6, 2, true, false);
+
+        // Draw track column E (Importance Weight)
+        ctx.fillStyle = '#1e293b';
+        drawRoundRect(ctx, attr.eSliderX, attr.y - 3, attr.sliderWidth, 6, 2, true, false);
+        ctx.fillStyle = '#fbbf24';
+        drawRoundRect(ctx, attr.eSliderX, attr.y - 3, ((attr.e - 1) / 9) * attr.sliderWidth, 6, 2, true, false);
+
+        // Handle B Knob
+        const bKnobX = attr.bSliderX + ((attr.b - 1) / 9) * attr.sliderWidth;
+        ctx.save();
+        ctx.shadowColor = '#06b6d4';
+        ctx.shadowBlur = 6;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(bKnobX, attr.y, attr.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 7.5px Space Grotesk, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(attr.b, bKnobX, attr.y);
+        ctx.restore();
+
+        // Handle E Knob
+        const eKnobX = attr.eSliderX + ((attr.e - 1) / 9) * attr.sliderWidth;
+        ctx.save();
+        ctx.shadowColor = '#fbbf24';
+        ctx.shadowBlur = 6;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(eKnobX, attr.y, attr.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 7.5px Space Grotesk, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(attr.e, eKnobX, attr.y);
+        ctx.restore();
+
+        // Sublabels bi and ei
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = 'bold 8.5px font-mono';
+        ctx.fillText("b" + (attr.id + 1), attr.bSliderX - 16, attr.y + 3);
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 8.5px font-mono';
+        ctx.fillText("e" + (attr.id + 1), attr.eSliderX - 16, attr.y + 3);
+      });
+
+      // Right-side visual bar charts showing comparison of current Ao
+      const chartX = w * 0.72;
+      const chartW = w * 0.23;
+      const chartH = h * 0.55;
+      const chartY = h * 0.15;
+
+      // Draw Competitor bar on right (static 170 score)
+      const competitorHeight = (g4CompetitorScore / 200) * chartH;
+      ctx.save();
+      ctx.fillStyle = '#1e1b4b';
+      ctx.strokeStyle = '#f43f5e';
+      ctx.lineWidth = 2;
+      drawRoundRect(ctx, chartX, chartY + (chartH - competitorHeight), chartW * 0.45, competitorHeight, 4, true, true);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 8px Space Grotesk, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText("Comp", chartX + chartW * 0.22, chartY + chartH + 12);
+      ctx.fillText(g4CompetitorScore, chartX + chartW * 0.22, chartY + (chartH - competitorHeight) - 8);
+      ctx.restore();
+
+      // Draw Our brand score bar dynamically
+      const currentAoScore = g4Attributes.reduce((sum, item) => sum + (item.b * item.e), 0);
+      g4CurrentAo = currentAoScore;
+      const isWinning = currentAoScore >= g4TargetScore;
+
+      const ourHeight = (currentAoScore / 200) * chartH;
+      ctx.save();
+      ctx.fillStyle = isWinning ? 'rgba(16, 185, 129, 0.2)' : 'rgba(6, 182, 212, 0.2)';
+      ctx.strokeStyle = isWinning ? '#10b981' : '#06b6d4';
+      ctx.lineWidth = 2;
+      drawRoundRect(ctx, chartX + chartW * 0.55, chartY + (chartH - ourHeight), chartW * 0.45, ourHeight, 4, true, true);
+
+      ctx.fillStyle = isWinning ? '#10b981' : '#cbd5e1';
+      ctx.font = 'bold 8px Space Grotesk, sans-serif';
+      ctx.fillText("Aura", chartX + chartW * 0.77, chartY + chartH + 12);
+      ctx.fillText(currentAoScore, chartX + chartW * 0.77, chartY + (chartH - ourHeight) - 8);
+      ctx.restore();
+
+      // Draw Target Threshold line visually across the bar charts
+      const targetLineY = chartY + chartH - (g4TargetScore / 200) * chartH;
+      ctx.save();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(chartX - 5, targetLineY);
+      ctx.lineTo(chartX + chartW + 5, targetLineY);
+      ctx.stroke();
+      
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 6.5px Space Grotesk, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText("WIN TARGET (175)", chartX + chartW * 0.5, targetLineY - 4);
+      ctx.restore();
+
+      // Equations live ticker underneath sliders
+      ctx.fillStyle = '#090d22';
+      ctx.strokeStyle = isWinning ? '#10b981' : '#f43f5e';
+      ctx.lineWidth = 2;
+      drawRoundRect(ctx, w * 0.05, h * 0.73, w * 0.9, 25, 6, true, true);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 9px Space Grotesk, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Ao = (${g4Attributes[0].b}×${g4Attributes[0].e}) + (${g4Attributes[1].b}×${g4Attributes[1].e}) + (${g4Attributes[2].b}×${g4Attributes[2].e}) = ${currentAoScore}`, w * 0.08, h * 0.82);
+
+      ctx.fillStyle = isWinning ? '#10b981' : '#f43f5e';
+      ctx.font = 'bold 10px Space Grotesk, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(`TARGET: ${g4TargetScore}`, w * 0.92, h * 0.82);
+    }
+
+    // ==================== 7. PARTICLE PHYSICS ENGINE ====================
+    function drawParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.02;
+        p.r *= 0.96;
+
+        if (p.alpha <= 0 || p.r < 0.5) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function createImpactParticles(x, y, color) {
+      for (let i = 0; i < 15; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1 + Math.random() * 3;
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          r: 3 + Math.random() * 4,
+          alpha: 1.0,
+          color: color
+        });
+      }
+    }
+
+    function triggerSuccessAnimate(state) {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
+      const ribbon = document.getElementById("gameSuccessRibbon");
+
+      if (state) {
+        for (let j = 0; j < 40; j++) {
+          particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: (Math.random() - 0.5) * 1.5,
+            r: 4 + Math.random() * 5,
+            alpha: 1.0,
+            color: '#10b981'
+          });
+        }
+        ribbon.classList.remove("translate-y-12", "opacity-0");
+        ribbon.classList.add("translate-y-0", "opacity-100");
+      } else {
+        ribbon.classList.add("translate-y-12", "opacity-0");
+        ribbon.classList.remove("translate-y-0", "opacity-100");
+      }
+    }
+
+    // ==================== 8. CORE WEB APPLICATION ROUTING & VIEWPORT SCROLL ====================
+    function switchTab(index) {
+      activeTab = index;
+      
+      for (let i = 0; i < 4; i++) {
+        const tab = document.getElementById("navTab" + i);
+        if (i === index) {
+          tab.classList.add("active-tab");
+        } else {
+          tab.classList.remove("active-tab");
+        }
+      }
+
+      const slider = document.getElementById("cardSlider");
+      slider.style.transform = `translateX(-${index * 25}%)`;
+
+      handleResize();
+      triggerSuccessAnimate(stepsCompleted[index]);
+    }
+
+    function nextCard() {
+      if (stepsCompleted[activeTab] && activeTab < 3) {
+        switchTab(activeTab + 1);
+      }
+    }
+
+    function enableNextButton(stepIdx) {
+      const nextBtn = document.getElementById("nextBtn" + stepIdx);
+      if (nextBtn) {
+        nextBtn.classList.remove("bg-slate-800", "text-slate-500", "cursor-not-allowed");
+        nextBtn.classList.add("bg-cyberCyan", "text-slate-950", "hover:bg-cyan-400", "font-extrabold", "cursor-pointer");
+        nextBtn.innerHTML = translations[currentLanguage].nextBtnComplete;
+      }
+    }
+
+    function updateStepStatusUI(stepIdx, completed) {
+      const badge = document.getElementById("statusBadge" + stepIdx);
+      if (badge) {
+        if (completed) {
+          badge.className = "bg-emerald-950 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold px-2 py-0.5 rounded uppercase glow-emerald";
+          badge.innerHTML = currentLanguage === 'en' ? "Verified" : "තහවුරුයි";
+        } else {
+          badge.className = "bg-rose-950 text-rose-400 border border-rose-500/30 text-[9px] font-bold px-2 py-0.5 rounded uppercase";
+          badge.innerHTML = currentLanguage === 'en' ? "Pending" : "ක්‍රියාත්මක වෙමින්";
+        }
+      }
+    }
+
+    function toggleExpander(index) {
+      const content = document.getElementById("expanderContent" + index);
+      const arrow = document.getElementById("expanderArrow" + index);
+      if (content.classList.contains("hidden")) {
+        content.classList.remove("hidden");
+        arrow.innerHTML = "▲";
+      } else {
+        content.classList.add("hidden");
+        arrow.innerHTML = "▼";
+      }
+    }
+
+    // ==================== 9. BILINGUAL TRANSLATION SYSTEM ====================
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === 'en' ? 'si' : 'en';
+      updateBilingualUI();
+      handleResize();
+    }
+
+    // Dynamic state synchronizer
+    function updateBilingualUI() {
+      const lang = translations[currentLanguage];
+      
+      document.getElementById("headerTitle").innerText = lang.headerTitle;
+      document.getElementById("langIndicator").innerText = lang.langIndicator;
+      document.getElementById("canvasOverlayPrompt").innerText = lang.canvasOverlayPrompt;
+      document.getElementById("successRibbonTxt").innerText = lang.successRibbonTxt;
+
+      document.getElementById("footerBrand").innerText = lang.footerBrand;
+      document.getElementById("footerCreds").innerText = lang.footerCreds;
+
+      for (let i = 0; i < 4; i++) {
+        document.getElementById("tabName" + i).innerText = lang.tabs[i];
+        document.getElementById("cardTitle" + i).innerText = lang.cardTitles[i];
+        document.getElementById("cardDesc" + i).innerText = lang.cardDescs[i];
+        
+        if (i === 0 || i === 2) {
+          const resetId = i === 0 ? "resetBtn0" : "resetBtn2";
+          document.getElementById(resetId).innerText = lang.resetBtn[i === 0 ? 0 : 1];
+        }
+
+        document.getElementById("expanderTitle" + i).innerHTML = "🔍 " + lang.expanderTitle;
+
+        const nextBtn = document.getElementById("nextBtn" + i);
+        if (nextBtn) {
+          if (stepsCompleted[i]) {
+            nextBtn.innerHTML = lang.nextBtnComplete;
+          } else {
+            nextBtn.innerHTML = lang.nextBtnIncomplete;
+          }
+        }
+
+        updateStepStatusUI(i, stepsCompleted[i]);
+      }
+
+      document.getElementById("testCalibrateBtn").innerHTML = "🚀 " + (currentLanguage === 'en' ? "Test Calibration Strategy" : "ක්‍රමාංකන උපායමාර්ගය පරීක්ෂා කරන්න");
+      document.getElementById("calculateBtn").innerHTML = "📊 " + (currentLanguage === 'en' ? "Verify Attitude Score" : "ආකල්ප ලකුණු තහවුරු කරන්න");
+
+      const badgeBtn = document.getElementById("badgeUnlockBtn");
+      if (stepsCompleted[3]) {
+        badgeBtn.innerHTML = `🏆 ${lang.badgeBtnTxtUnlocked}`;
+      } else {
+        badgeBtn.innerHTML = `🏆 ${lang.badgeBtnTxt}`;
+      }
+
+      document.getElementById("modalTitle").innerText = lang.modalTitle;
+      document.getElementById("modalQuote").innerText = lang.modalQuote;
+      document.getElementById("modalCloseBtn").innerText = lang.modalCloseBtn;
+    }
+
+    // ==================== 10. REWARD CERTIFICATION SYSTEM ====================
+    function triggerBadgeUnlock() {
+      const allDone = stepsCompleted.every(s => s === true);
+      if (allDone) {
+        const modal = document.getElementById("badgeModal");
+        modal.classList.remove("scale-0", "opacity-0", "pointer-events-none");
+        modal.classList.add("scale-100", "opacity-100");
+      }
+    }
+
+    function closeBadgeModal() {
+      const modal = document.getElementById("badgeModal");
+      modal.classList.add("scale-0", "opacity-0", "pointer-events-none");
+      modal.classList.remove("scale-100", "opacity-100");
+    }
+
+    // Canvas Utility to draw clean rounded rectangles
+    function drawRoundRect(c, x, y, width, height, radius, fill, stroke) {
+      if (typeof radius === 'undefined') {
+        radius = 5;
+      }
+      if (typeof radius === 'number') {
+        radius = {tl: radius, tr: radius, br: radius, bl: radius};
+      } else {
+        var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+        for (var side in defaultRadius) {
+          radius[side] = radius[side] || defaultRadius[side];
+        }
+      }
+      c.beginPath();
+      c.moveTo(x + radius.tl, y);
+      c.lineTo(x + width - radius.tr, y);
+      c.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+      c.lineTo(x + width, y + height - radius.br);
+      c.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+      c.lineTo(x + radius.bl, y + height);
+      c.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+      c.lineTo(x, y + radius.tl);
+      c.quadraticCurveTo(x, y, x + radius.tl, y);
+      c.closePath();
+      if (fill) {
+        c.fill();
+      }
+      if (stroke) {
+        c.stroke();
+      }
+    }
+  </script>
+
+  <!-- MathJax for rendering Mathematical Multi-Attribute formulas in expanders dynamically -->
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</body>
+</html>
