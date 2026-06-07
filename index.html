@@ -747,25 +747,32 @@
 
       // ---- SETUP GAME 4 GEOMETRY (Fishbein layout with wide separate sliders and chart) ----
       const numAttrs = 3;
-      const attrSpacingY = h / (numAttrs + 1.2);
-      g4Attributes = [];
-      
       const initialMetrics = [
         { b: 5, e: 6 }, // Prestige & Status
         { b: 6, e: 7 }, // Sensor accuracy
         { b: 4, e: 8 }  // Low Cost Affordability
       ];
 
-      for (let i = 0; i < numAttrs; i++) {
-        g4Attributes.push({
-          id: i,
-          y: attrSpacingY * (i + 1.1),
-          b: initialMetrics[i].b,
-          e: initialMetrics[i].e,
-          bSliderX: w * 0.05,
-          eSliderX: w * 0.36,
-          sliderWidth: w * 0.28, // Double the touch area
-          radius: 11 // Enhanced touch target radius
+      // Re-allocate coordinate array to guarantee spacing from the bottom red/green calculation ticker box
+      if (g4Attributes.length === 0) {
+        for (let i = 0; i < numAttrs; i++) {
+          g4Attributes.push({
+            id: i,
+            y: h * 0.16 + i * (h * 0.17),
+            b: initialMetrics[i].b,
+            e: initialMetrics[i].e,
+            bSliderX: w * 0.05,
+            eSliderX: w * 0.36,
+            sliderWidth: w * 0.28, 
+            radius: 11 
+          });
+        }
+      } else {
+        g4Attributes.forEach((attr, i) => {
+          attr.y = h * 0.16 + i * (h * 0.17);
+          attr.bSliderX = w * 0.05;
+          attr.eSliderX = w * 0.36;
+          attr.sliderWidth = w * 0.28;
         });
       }
     }
@@ -855,6 +862,7 @@
       handlePointerUp();
     }
 
+    // Click overrides
     function onMouseDown(e) {
       setCoordinates(e);
       isMouseDown = true;
@@ -1568,7 +1576,8 @@
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 8px Noto Sans, Noto Sans Sinhala';
       ctx.textAlign = 'center';
-      ctx.fillText(labels.g4MathTxt, w / 2, h * 0.08);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labels.g4MathTxt, w / 2, h * 0.03 + 10);
 
       // Render sliders for qualitative attribute parameters (Belief & Importance)
       g4Attributes.forEach(attr => {
@@ -1629,20 +1638,21 @@
         ctx.fillText(attr.e, eKnobX, attr.y);
         ctx.restore();
 
-        // Sublabels bi and ei
+        // Sublabels bi and ei aligned cleanly to track centerlines
+        ctx.textBaseline = 'middle';
         ctx.fillStyle = '#06b6d4';
         ctx.font = 'bold 8.5px font-mono';
-        ctx.fillText("b" + (attr.id + 1), attr.bSliderX - 16, attr.y + 3);
+        ctx.fillText("b" + (attr.id + 1), attr.bSliderX - 16, attr.y);
 
         ctx.fillStyle = '#fbbf24';
         ctx.font = 'bold 8.5px font-mono';
-        ctx.fillText("e" + (attr.id + 1), attr.eSliderX - 16, attr.y + 3);
+        ctx.fillText("e" + (attr.id + 1), attr.eSliderX - 16, attr.y);
       });
 
       // Right-side visual bar charts showing comparison of current Ao
       const chartX = w * 0.72;
       const chartW = w * 0.23;
-      const chartH = h * 0.55;
+      const chartH = h * 0.50;
       const chartY = h * 0.15;
 
       // Draw Competitor bar on right (static 170 score)
@@ -1695,21 +1705,25 @@
       ctx.fillText("WIN TARGET (175)", chartX + chartW * 0.5, targetLineY - 4);
       ctx.restore();
 
-      // Equations live ticker underneath sliders
+      // Equations live ticker cleanly offset from layout sliders with absolute vertical tracking
+      const boxY = h * 0.72;
+      const boxH = 26;
       ctx.fillStyle = '#090d22';
       ctx.strokeStyle = isWinning ? '#10b981' : '#f43f5e';
       ctx.lineWidth = 2;
-      drawRoundRect(ctx, w * 0.05, h * 0.73, w * 0.9, 25, 6, true, true);
+      drawRoundRect(ctx, w * 0.05, boxY, w * 0.9, boxH, 6, true, true);
 
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 9px Space Grotesk, sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText(`Ao = (${g4Attributes[0].b}×${g4Attributes[0].e}) + (${g4Attributes[1].b}×${g4Attributes[1].e}) + (${g4Attributes[2].b}×${g4Attributes[2].e}) = ${currentAoScore}`, w * 0.08, h * 0.82);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`Ao = (${g4Attributes[0].b}×${g4Attributes[0].e}) + (${g4Attributes[1].b}×${g4Attributes[1].e}) + (${g4Attributes[2].b}×${g4Attributes[2].e}) = ${currentAoScore}`, w * 0.08, boxY + boxH / 2);
 
       ctx.fillStyle = isWinning ? '#10b981' : '#f43f5e';
       ctx.font = 'bold 10px Space Grotesk, sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText(`TARGET: ${g4TargetScore}`, w * 0.92, h * 0.82);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`TARGET: ${g4TargetScore}`, w * 0.92, boxY + boxH / 2);
     }
 
     // ==================== 7. PARTICLE PHYSICS ENGINE ====================
